@@ -2,12 +2,12 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid bg1 d-flex vh-100 mx-auto text-center align-items-center justify-content-center"
+<div class="container-fluid d-flex vh-100 text-center align-items-center"
      style="height: 100vh;">
     <header class="mb-auto">
         <div>
             <img src="{% static 'img/icon.svg' %}" class="rounded float-start">
-            <nav class="nav nav-masthead justify-content-center float-md-end">
+            <nav class="nav nav-masthead float-md-end">
                 <a class="nav-link fw-bold py-1 px-0" aria-current="page" href="{% url 'restaurant:home' %}">Главная</a>
                 <a class="nav-link fw-bold py-1 px-0" href="{% url 'restaurant:about' %}">О ресторане</a>
                 {% if user.is_authenticated %}
@@ -21,9 +21,9 @@
             </nav>
         </div>
     </header>
-    <div class="cover-container d-flex vh-100 mx-auto text-center align-items-center justify-content-center">
+    <div class="container-fluid text-center">
         <form class="row" method="post" enctype="multipart/form-data">
-            <div class="col">
+            <div class="col-6 mx-auto">
                 <div class="card">
                     <div class="card-header">
                         {% if user.is_authenticated %}

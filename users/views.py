@@ -8,6 +8,8 @@ from django.views.generic import TemplateView, CreateView, UpdateView
 from users.forms import UserRegisterForm, UserProfileForm
 from users.models import User
 
+from restaurant.tasks import send_email
+
 
 class UserCreateView(CreateView):
     model = User
@@ -23,12 +25,9 @@ class UserCreateView(CreateView):
         user.save()
         host = self.request.get_host()
         url = f'http://{host}/users/email_confirm/{token}/'
-        send_mail(
-            subject='Подтверждение почты',
-            message=f'Для подтверждения почты перейдите по ссылке: {url}',
-            from_email=EMAIL_HOST_USER,
-            recipient_list=[user.email]
-        )
+        subject = 'Подтверждение почты'
+        message = f'Для подтверждения почты перейдите по ссылке: {url}'
+        send_email.delay(subject, message, [user.email])
         return super().form_valid(form)
 
 
@@ -49,13 +48,9 @@ class ResetPassword(TemplateView):
         new_password = secrets.token_hex(16)
         user.set_password(new_password)
         user.save()
+        subject = 'Изменение пароля'
         message = f'Новый сгенерированный пароль: {new_password}'
-        send_mail(
-            subject='Изменение пароля',
-            message=message,
-            from_email=EMAIL_HOST_USER,
-            recipient_list=[user.email]
-        )
+        send_email.delay(subject, message, [user.email])
         return redirect('users:login')
 
 
