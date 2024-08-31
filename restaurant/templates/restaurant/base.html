@@ -1,16 +1,19 @@
 {% load static %}
 
 <!doctype html>
-<html lang="en" class="h-100" data-bs-theme="auto">
+<html lang="en" data-bs-theme="auto">
 <head>
-    <script src="{%static 'js/color-modes.js' %}"></script>
+    <script src="{% static 'js/color-modes.js' %}"></script>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="DeerHouse Restaurant Website">
     <meta name="author" content="Ivan Ukhov">
     <meta name="generator" content="ver. 0.1">
-    <title>Deer House</title>
+    <title>About</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
 
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -92,42 +95,25 @@
       .bd-mode-toggle .dropdown-menu .active .bi {
         display: block !important;
       }
-    </style>
 
+      .container-fluid {
+        flex-direction: column;
+        justify-content: center;
+      }
+
+    </style>
 
     <!-- Custom styles for this template -->
     <link href="{% static 'css/cover.css' %}" rel="stylesheet">
+
 </head>
-<body class="row h-100 text-center text-bg-dark">
-<div class="container-fluid">
-    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
 
-        {% include "restaurant/includes/inc_navbar.html" %}
+<body>
+{% block content %}
+{% endblock %}
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 
-        {% block content %}
-        {% endblock %}
-
-        <footer class="mt-auto text-white-50">
-            &copy; 2024, Deer House Restaurant. All rights reserved.
-        </footer>
-    </div>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-            crossorigin="anonymous"></script>
-</div>
-<div class="row">
-    <div class="container-fluid">
-        <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-
-
-            <footer class="mt-auto text-white-50">
-                &copy; 2024, Deer House Restaurant. All rights reserved.
-            </footer>
-        </div>
-        <script src="{% static 'js/bootstrap.bundle.min.js' %}"
-                integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-                crossorigin="anonymous"></script>
-    </div>
-</div>
 </body>
 </html>

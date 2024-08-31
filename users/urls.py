@@ -1,10 +1,16 @@
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
-from restaurant.apps import RestaurantConfig
+from users.apps import UsersConfig
+from users.views import ResetPassword, UserCreateView, email_verification, ProfileView
 
-
-app_name = RestaurantConfig.name
+app_name = UsersConfig.name
 
 urlpatterns = [
-    # path('', Homepage.as_view(), name='home'),
+    path('login/', LoginView.as_view(template_name='users/login.html'), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('reset_password/', ResetPassword.as_view(), name='reset_password'),
+    path('register/', UserCreateView.as_view(), name='register'),
+    path('email_confirm/<str:token>/', email_verification, name='email_confirm'),
+    path('profile/', ProfileView.as_view(), name='profile'),
     ]
