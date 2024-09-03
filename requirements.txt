@@ -1,0 +1,12 @@
+Django==4.2.2
+python-dotenv==1.0.1
+psycopg2==2.9.9
+Pillow
+celery
+eventlet
+django-celery-beat
+redis
+django-multiselectfield
+django-crispy-forms
+crispy-bootstrap5
+pytz
