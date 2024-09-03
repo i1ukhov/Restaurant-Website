@@ -25,6 +25,11 @@ INSTALLED_APPS = [
     "users",
 
     "django_celery_beat",
+
+    "crispy_forms",
+    "crispy_bootstrap5",
+    "multiselectfield",
+
 ]
 
 MIDDLEWARE = [
@@ -91,6 +96,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+# # crispy
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 STATIC_URL = "static/"
 
 STATICFILES_DIRS = (
@@ -111,7 +120,7 @@ LOGIN_REDIRECT_URL = "/"
 
 LOGOUT_REDIRECT_URL = "/"
 
-LOGIN_URL = "/login/"
+LOGIN_URL = "/users/login/"
 
 # Celery settings
 CELERY_TIMEZONE = TIME_ZONE
@@ -121,8 +130,8 @@ CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_BEAT_SCHEDULE = {
-    "check_users_activity": {
-        "task": "users.tasks.check_users_activity",
+    "check_reservation_statuses": {
+        "task": "restaurant.tasks.check_reservation_statuses",
         "schedule": timedelta(days=1),
     },
 }

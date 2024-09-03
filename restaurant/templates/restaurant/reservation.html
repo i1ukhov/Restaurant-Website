@@ -1,0 +1,152 @@
+{% extends 'restaurant/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load my_tags %}
+
+{% block content %}
+<div class="container d-flex m-auto text-center justify-content-center">
+    <header class="mb-auto">
+        <div>
+            <img src="{% static 'img/icon.svg' %}" class="rounded float-start">
+            <nav class="nav nav-masthead justify-content-center float-md-end">
+                <a class="nav-link fw-bold py-1 px-0" aria-current="page" href="{% url 'restaurant:home' %}">Главная</a>
+                <a class="nav-link fw-bold py-1 px-0" href="{% url 'restaurant:about' %}">О ресторане</a>
+                {% if user.is_authenticated %}
+                <a class="nav-link fw-bold py-1 px-0 active" href="#">Забронировать</a>
+                <a class="nav-link fw-bold py-1 px-0" href="{% url 'users:profile' %}">Профиль</a>
+                <a class="nav-link fw-bold py-1 px-0" href="{% url 'users:logout' %}">Выход</a>
+
+                {% else %}
+                <a class="nav-link fw-bold py-1 px-0" href="{% url 'users:login' %}">Вход</a>
+                <a class="nav-link fw-bold py-1 px-0" href="{% url 'users:register' %}">Регистрация</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+</div>
+<div class="container mt-3 mb-3 d-flex justify-content-center">
+    <div class="mt-3 mb-3">
+        <form id="p-form">
+            {% csrf_token %}
+            {{ form|crispy }}
+<!--            {% for value, text in form.time.field.choices %}-->
+<!--            <div class="ui slider checkbox">-->
+<!--                <input id="id_providers_{{ forloop.counter0 }}" name="{{ form.providers.name }}" type="checkbox"-->
+<!--                       value="{{ value }}" {% if value in checked_providers %} checked="checked" {% endif %}>-->
+<!--                <label>{{ text }}</label>-->
+<!--            </div>-->
+<!--            {% endfor %}-->
+            <button type="submit" class="btn btn-primary">Забронировать</button>
+        </form>
+    </div>
+</div>
+<script>
+    time_field = document.getElementById('div_id_time');
+    button = document.getElementsByTagName('button')[0];
+    button.style.visibility = 'hidden';
+    time_field.style.visibility='hidden'
+    document.getElementById('id_date').onchange = checkIt;
+    document.getElementById('id_table').onchange = checkIt;
+    function checkIt(){
+        if (document.getElementById('id_date').value!=''&&document.getElementById('id_table').value!=''){
+            time_field.style.visibility='visible';
+            button.style.visibility = 'visible';
+        } else {
+            time_field.style.visibility='hidden';
+            button.style.visibility = 'hidden';
+        }
+    }
+
+    const reserved = {{reserved | js}};
+    const user = {{user | js}};
+    console.log(user);
+    console.log(reserved);
+
+    const f = {{form}}
+    // Находим все элементы с классом form-check
+    const formCheckElements = document.querySelectorAll('.form-check');
+
+
+    f.addEventListener('change', e=>{
+        e.preventDefault()
+
+               // Находим все элементы с классом form-check
+        const formCheckElements = document.querySelectorAll('.form-check');
+
+        // Итерируем по каждому элементу form-check
+        formCheckElements.forEach((element) => {
+            // Находим input внутри каждого элемента form-check
+            const input = element.querySelector('.form-check-input');
+            console.log(input.value);
+
+            // Если значение input находится в списке reserved, скрываем элемент
+            if (reserved.includes(input.value)) {
+                element.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block domready %}
+    const form = document.getElementById('p-form');
+
+    const date = document.getElementById('id_date')
+    const table = document.getElementById('id_table')
+    const time = document.getElementById('id_time')
+    const user = {{user | js}};
+    console.log('hello')
+
+    const csrf = document.getElementsByName('csrfmiddlewaretoken')
+    console.log(csrf)
+
+    console.log(form);
+
+    const url = ''
+
+
+
+
+    form.addEventListener('change', e=>{
+        e.preventDefault()
+
+        const fd = new FormData()
+        fd.append('csrfmiddlewaretoken', csrf[0].value)
+        fd.append('date', date.value)
+        fd.append('table', table.value)
+        fd.append('user', user)
+
+        function getCheckedCheckBoxes() {
+            var checkboxes = document.getElementsByClassName('form-check-input');
+            var checkboxesChecked = []; // можно в массиве их хранить, если нужно использовать
+            for (var index = 0; index < checkboxes.length; index++) {
+                if (checkboxes[index].checked) {
+                    checkboxesChecked.push(checkboxes[index].value); // положим в массив выбранный
+                 alert(checkboxes[index].value); // делайте что нужно - это для наглядности
+                }
+            }
+        return checkboxesChecked; // для использования в нужном месте
+        }
+        time_data = getCheckedCheckBoxes();
+
+        fd.append('time', time_data);
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            enctype: 'multipart/form-data',
+            data: fd,
+<!--            success: function(response){-->
+<!--                console.log("okay")-->
+<!--            },-->
+            error: function(error){
+                console.log("not okay")
+            },
+            cache: false,
+            contentType: false,
+            processData: false,
+        })
+    })
+
+{% endblock %}
+

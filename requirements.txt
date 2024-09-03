@@ -6,3 +6,6 @@ celery
 eventlet
 django-celery-beat
 redis
+django-multiselectfield
+django-crispy-forms
+crispy-bootstrap4

@@ -1,9 +1,15 @@
-from django.shortcuts import redirect
-from django.views.generic import TemplateView
+import secrets
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse_lazy, reverse
+from django.views.generic import TemplateView, CreateView, ListView, UpdateView
 
 from config.settings import ADMIN_EMAIL
-from restaurant.models import Dish
+from restaurant.models import Dish, Reservation
 from restaurant.tasks import send_email
+from restaurant.forms import ReservationForm
 
 
 class Homepage(TemplateView):
@@ -32,7 +38,6 @@ class Homepage(TemplateView):
         return context_data
 
     def post(self, request, *args, **kwargs):
-        # name, phone, email, subject, message
         name = str(request.POST.get('name'))
         phone = str(request.POST.get('phone'))
         email = str(request.POST.get('email'))
@@ -53,3 +58,52 @@ class Homepage(TemplateView):
 
 class AboutPage(TemplateView):
     template_name = "restaurant/about.html"
+
+
+class ReservationCreateView(LoginRequiredMixin, CreateView):
+    model = Reservation
+    form_class = ReservationForm
+    success_url = reverse_lazy("restaurant:home")
+
+    def form_valid(self, form):
+        reservation = form.save()
+        user = self.request.user
+        reservation.user = user
+        reservation.save()
+        reservation_token = secrets.token_hex(16)
+        reservation.reservation_token = reservation_token
+        host = self.request.get_host()
+        url = f"http://{host}/reservation_confirm/{reservation_token}/"
+        to_email = user.email
+        subject_for_user = "Подтвердите бронирование"
+        message_for_user = f"Ваше бронирование на {reservation.date} создано. Для подтверждения перейдите по ссылке: {url}. В случае неподтвержденной брони, она автоматически отменяется через 24 часа"
+        send_email.delay(subject_for_user, message_for_user, [to_email])
+        return super().form_valid(form)
+
+
+def reservation_confirm(request, reservation_token):
+    reservation = get_object_or_404(Reservation, reservation_token=reservation_token)
+    reservation.status = "confirmed"
+    reservation.save()
+    return redirect(reverse('restaurant:home'))
+
+
+class ReservationListView(LoginRequiredMixin, ListView):
+    model = Reservation
+
+    def get_queryset(self):
+        reservations = Reservation.objects.filter(user=self.request.user)
+        return reservations
+
+
+class ReservationUpdateView(LoginRequiredMixin, UpdateView):
+    model = Reservation
+    form_class = ReservationForm
+    success_url = reverse_lazy("restaurant:reservation_list")
+
+
+def reservation_cancel(request, pk):
+    reservation = get_object_or_404(Reservation, pk=pk)
+    reservation.status = "canceled"
+    reservation.save()
+    return redirect(reverse('restaurant:reservation_list'))
