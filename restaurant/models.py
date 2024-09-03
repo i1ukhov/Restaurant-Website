@@ -90,7 +90,7 @@ class Reservation(models.Model):
     reservation_token = models.CharField(max_length=50, verbose_name="Reservation token", **NULLABLE)
 
     def __str__(self):
-        return f"Бронь №{self.pk} на {self.date}. Столик - {self.table}. Время: {self.time}"
+        return f"Бронь №{self.pk} на {self.date}. Столик - {self.table}. Время: {', '.join(list(str(t) for t in self.time))}"
 
     class Meta:
         verbose_name = "Бронь"

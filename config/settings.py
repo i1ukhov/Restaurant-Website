@@ -132,7 +132,7 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_BEAT_SCHEDULE = {
     "check_reservation_statuses": {
         "task": "restaurant.tasks.check_reservation_statuses",
-        "schedule": timedelta(days=1),
+        "schedule": timedelta(hours=12),
     },
 }
 

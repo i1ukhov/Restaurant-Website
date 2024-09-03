@@ -9,3 +9,4 @@ redis
 django-multiselectfield
 django-crispy-forms
 crispy-bootstrap4
+pytz
