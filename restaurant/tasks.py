@@ -1,4 +1,5 @@
 from datetime import datetime
+
 import pytz
 from celery import shared_task
 from django.conf import settings
@@ -15,7 +16,7 @@ def send_email(subject: str, message: str, to: list[str]):
             subject=subject,
             message=message,
             from_email=settings.EMAIL_HOST_USER,
-            recipient_list=to
+            recipient_list=to,
         )
         return "Successfully sent"
     except Exception as e:
@@ -28,9 +29,15 @@ def check_reservation_statuses():
     reservations = Reservation.objects.all().order_by("created_at")
     now = datetime.now(tz=pytz.UTC)
     for reservation in reservations:
-        if reservation.status == "created" and (now - reservation.created_at).total_seconds() > 3600*12:
+        if (
+            reservation.status == "created"
+            and (now - reservation.created_at).total_seconds() > 3600 * 12
+        ):
             reservation.status = "canceled"
             reservation.save()
-        elif reservation.status == "confirmed" and (reservation.date.today() - reservation.date).days > 0:
+        elif (
+            reservation.status == "confirmed"
+            and (reservation.date.today() - reservation.date).days > 0
+        ):
             reservation.status = "completed"
             reservation.save()

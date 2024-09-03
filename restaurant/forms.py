@@ -1,9 +1,9 @@
 from datetime import timedelta
 
+from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import BooleanField, DateField
-from django import forms
 
 from restaurant.models import Reservation
 
@@ -25,13 +25,15 @@ class ReservationForm(FormStyleMixin, forms.ModelForm):
         model = Reservation
         fields = ("date", "table", "time", "user")
         widgets = {
-            'date': forms.TextInput(attrs={'type': 'date', "input_formats": '%Y-%m-%d'}),
-            'user': forms.HiddenInput
+            "date": forms.TextInput(
+                attrs={"type": "date", "input_formats": "%Y-%m-%d"}
+            ),
+            "user": forms.HiddenInput,
         }
 
     def clean_date(self):
         """Валидация введённой даты."""
-        date = self.cleaned_data.get('date')
+        date = self.cleaned_data.get("date")
         today = date.today()
         till_date = today + timedelta(days=60)
 
@@ -43,18 +45,20 @@ class ReservationForm(FormStyleMixin, forms.ModelForm):
 
     def clean_time(self):
         """Проверка, свободно ли время."""
-        date = self.cleaned_data.get('date')
-        table = self.cleaned_data.get('table')
-        time = self.cleaned_data.get('time')
-        user = self.data.get('user')
+        date = self.cleaned_data.get("date")
+        table = self.cleaned_data.get("table")
+        time = self.cleaned_data.get("time")
+        user = self.data.get("user")
         if user:
-            reserved = Reservation.objects.filter(~Q(user=user) & (Q(status="created") | Q(status="confirmed")),
-                                                  date=date,
-                                                  table=table)
+            reserved = Reservation.objects.filter(
+                ~Q(user=user) & (Q(status="created") | Q(status="confirmed")),
+                date=date,
+                table=table,
+            )
         else:
-            reserved = Reservation.objects.filter(Q(status="created") | Q(status="confirmed"),
-                                                  date=date,
-                                                  table=table)
+            reserved = Reservation.objects.filter(
+                Q(status="created") | Q(status="confirmed"), date=date, table=table
+            )
         reserved_slots = []
         for obj in reserved:
             reserved_slots.extend(list(obj.time))
@@ -67,7 +71,9 @@ class ReservationForm(FormStyleMixin, forms.ModelForm):
             if slot in reserved_slots_list:
                 conflicting_slots.append(slot)
         if len(conflicting_slots) > 0:
-            raise ValidationError(f"Время на {', '.join(conflicting_slots)} уже занято. Выберите другой вариант")
+            raise ValidationError(
+                f"Время на {', '.join(conflicting_slots)} уже занято. Выберите другой вариант"
+            )
         return time
 
 
@@ -76,5 +82,7 @@ class ReservationUpdateForm(FormStyleMixin, forms.ModelForm):
         model = Reservation
         fields = "__all__"
         widgets = {
-            'date': forms.TextInput(attrs={'type': 'date', "input_formats": '%Y-%m-%d'}),
+            "date": forms.TextInput(
+                attrs={"type": "date", "input_formats": "%Y-%m-%d"}
+            ),
         }

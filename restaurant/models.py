@@ -7,13 +7,29 @@ NULLABLE = {"blank": True, "null": True}
 
 
 class Dish(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Название блюда", help_text="Введите название блюда")
-    photo = models.ImageField(upload_to="restaurant/images", verbose_name="Фото",
-                              help_text="Загрузите фотографию блюда", **NULLABLE)
-    description = models.TextField(verbose_name="Описание блюда", help_text="Введите описание блюда", **NULLABLE)
-    ingredients = models.TextField(verbose_name="Состав", help_text="Введите состав блюда", **NULLABLE)
-    weight = models.PositiveIntegerField(verbose_name="Вес блюда", help_text="Укажите вес блюда в граммах")
-    price = models.PositiveIntegerField(verbose_name="Цена", help_text="Укажите цену блюда в рублях")
+    name = models.CharField(
+        max_length=100,
+        verbose_name="Название блюда",
+        help_text="Введите название блюда",
+    )
+    photo = models.ImageField(
+        upload_to="restaurant/images",
+        verbose_name="Фото",
+        help_text="Загрузите фотографию блюда",
+        **NULLABLE,
+    )
+    description = models.TextField(
+        verbose_name="Описание блюда", help_text="Введите описание блюда", **NULLABLE
+    )
+    ingredients = models.TextField(
+        verbose_name="Состав", help_text="Введите состав блюда", **NULLABLE
+    )
+    weight = models.PositiveIntegerField(
+        verbose_name="Вес блюда", help_text="Укажите вес блюда в граммах"
+    )
+    price = models.PositiveIntegerField(
+        verbose_name="Цена", help_text="Укажите цену блюда в рублях"
+    )
     category_choices = [
         ("appetisers", "Закуски"),
         ("breakfasts", "Завтраки"),
@@ -24,8 +40,12 @@ class Dish(models.Model):
         ("drinks", "Напитки"),
         ("extra", "Дополнительно"),
     ]
-    category = models.CharField(max_length=25, choices=category_choices, verbose_name="Категория",
-                                help_text="Выберите категорию")
+    category = models.CharField(
+        max_length=25,
+        choices=category_choices,
+        verbose_name="Категория",
+        help_text="Выберите категорию",
+    )
 
     def __str__(self):
         return f"{self.name}. Вес: {self.weight} г. Стоимость: {self.price}"
@@ -36,8 +56,16 @@ class Dish(models.Model):
 
 
 class Reservation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Клиент", help_text="Укажите клиента", **NULLABLE)
-    date = models.DateField(verbose_name="Дата бронирования", help_text="Укажите дату бронирования")
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Клиент",
+        help_text="Укажите клиента",
+        **NULLABLE,
+    )
+    date = models.DateField(
+        verbose_name="Дата бронирования", help_text="Укажите дату бронирования"
+    )
     table_choices = [
         ("1A", "№1 веранда"),
         ("2A", "№2 веранда"),
@@ -56,7 +84,12 @@ class Reservation(models.Model):
         ("9B", "№9 зал"),
         ("10B", "№10 зал"),
     ]
-    table = models.CharField(max_length=5, choices=table_choices, verbose_name="Столик", help_text="Выберите столик")
+    table = models.CharField(
+        max_length=5,
+        choices=table_choices,
+        verbose_name="Столик",
+        help_text="Выберите столик",
+    )
 
     time_choices = [
         ("9", "9:00 - 10:00"),
@@ -74,7 +107,12 @@ class Reservation(models.Model):
         ("21", "21:00 - 22:00"),
         ("22", "22:00 - 23:00"),
     ]
-    time = MultiSelectField(choices=time_choices, max_choices=4, verbose_name="Время", help_text="Выберите слоты по времени (до 4-х слотов)")
+    time = MultiSelectField(
+        choices=time_choices,
+        max_choices=4,
+        verbose_name="Время",
+        help_text="Выберите слоты по времени (до 4-х слотов)",
+    )
 
     status_choices = [
         ("created", "Создана"),
@@ -82,12 +120,19 @@ class Reservation(models.Model):
         ("completed", "Завершена"),
         ("canceled", "Отменена"),
     ]
-    status = models.CharField(max_length=20, choices=status_choices, default="created",
-                              verbose_name="Статус бронирования", help_text="Укажите статус бронирования")
+    status = models.CharField(
+        max_length=20,
+        choices=status_choices,
+        default="created",
+        verbose_name="Статус бронирования",
+        help_text="Укажите статус бронирования",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
-    reservation_token = models.CharField(max_length=50, verbose_name="Reservation token", **NULLABLE)
+    reservation_token = models.CharField(
+        max_length=50, verbose_name="Reservation token", **NULLABLE
+    )
 
     def __str__(self):
         return f"Бронь №{self.pk} на {self.date}. Столик - {self.table}. Время: {', '.join(list(str(t) for t in self.time))}"

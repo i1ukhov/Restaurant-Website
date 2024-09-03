@@ -1,15 +1,14 @@
 import secrets
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse_lazy, reverse
-from django.views.generic import TemplateView, CreateView, ListView, UpdateView
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from config.settings import ADMIN_EMAIL
+from restaurant.forms import ReservationForm
 from restaurant.models import Dish, Reservation
 from restaurant.tasks import send_email
-from restaurant.forms import ReservationForm
 
 
 class Homepage(TemplateView):
@@ -38,22 +37,22 @@ class Homepage(TemplateView):
         return context_data
 
     def post(self, request, *args, **kwargs):
-        name = str(request.POST.get('name'))
-        phone = str(request.POST.get('phone'))
-        email = str(request.POST.get('email'))
-        subject = str(request.POST.get('subject'))
-        message = str(request.POST.get('message'))
+        name = str(request.POST.get("name"))
+        phone = str(request.POST.get("phone"))
+        email = str(request.POST.get("email"))
+        subject = str(request.POST.get("subject"))
+        message = str(request.POST.get("message"))
         # Если пользователь оставил email, то оправляем ему сообщение, что обращение получено
         if email:
-            subject_for_user = 'Мы получили Ваше обращение'
-            message_for_user = f'{name}, Ваше обращение доставлено администратору. Мы свяжемся с Вами в ближайшее время. Спасибо!'
+            subject_for_user = "Мы получили Ваше обращение"
+            message_for_user = f"{name}, Ваше обращение доставлено администратору. Мы свяжемся с Вами в ближайшее время. Спасибо!"
             send_email.delay(subject_for_user, message_for_user, [email])
         # Отправляем письмо администратору
-        subject_for_admin = 'Новое обращение на сайте'
-        message_for_admin = f'Имя: {name}, Телефон: {phone}, Email: {email}, Тема: {subject}, Сообщение: {message}'
+        subject_for_admin = "Новое обращение на сайте"
+        message_for_admin = f"Имя: {name}, Телефон: {phone}, Email: {email}, Тема: {subject}, Сообщение: {message}"
         send_email.delay(subject_for_admin, message_for_admin, [ADMIN_EMAIL])
 
-        return redirect('restaurant:home')
+        return redirect("restaurant:home")
 
 
 class AboutPage(TemplateView):
@@ -85,7 +84,7 @@ def reservation_confirm(request, reservation_token):
     reservation = get_object_or_404(Reservation, reservation_token=reservation_token)
     reservation.status = "confirmed"
     reservation.save()
-    return redirect(reverse('restaurant:home'))
+    return redirect(reverse("restaurant:home"))
 
 
 class ReservationListView(LoginRequiredMixin, ListView):
@@ -106,4 +105,4 @@ def reservation_cancel(request, pk):
     reservation = get_object_or_404(Reservation, pk=pk)
     reservation.status = "canceled"
     reservation.save()
-    return redirect(reverse('restaurant:reservation_list'))
+    return redirect(reverse("restaurant:reservation_list"))

@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,16 +21,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "restaurant",
     "users",
-
     "django_celery_beat",
-
     "crispy_forms",
     "crispy_bootstrap5",
     "multiselectfield",
-
 ]
 
 MIDDLEWARE = [
@@ -102,9 +99,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 STATIC_URL = "static/"
 
-STATICFILES_DIRS = (
-    BASE_DIR / "static",
-)
+STATICFILES_DIRS = (BASE_DIR / "static",)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
