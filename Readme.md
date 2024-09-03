@@ -17,10 +17,11 @@
 1. Установите виртуальное окружение.
 2. Клонируйте проект.
 3. Заполните файл .env по шаблону .env.pycharm_sample.
-4. Установите зависимости из requerments.txt.
+4. Установите зависимости из requerments.txt `pip3 install -r requirements.txt`.
+5. Подтянуть фикстуры `python manage.py loaddata fixtures/data.json`
 5. Запустите Redis
 `sudo service redis-server start`
-`redis-cli`
+`redis-cli`.
 6. Запустите проект Django `python manage.py runserver`.
 9. Запустите celery-worker и celery-beat для выполнения задач.
 
