@@ -33,7 +33,5 @@
 
 `docker-compose up -d` – запуск в режиме демона
 
-`docker-compose up -d` – запуск в режиме демона
-
 `docker-compose down` – для остановки с удалением контейнеров
   

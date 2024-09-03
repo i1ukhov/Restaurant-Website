@@ -8,5 +8,5 @@ django-celery-beat
 redis
 django-multiselectfield
 django-crispy-forms
-crispy-bootstrap4
+crispy-bootstrap5
 pytz
